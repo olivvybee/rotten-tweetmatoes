@@ -1,10 +1,7 @@
+import { loadImage } from 'canvas';
 import TwitterApi from 'twitter-api-v2';
 
-interface TweetData {
-  title: string;
-  year: number;
-  likes: number;
-}
+import { MovieTweet } from './interfaces';
 
 const MOVIE_TWEET_REGEX = /\s*Now watching:(.+)\(([\d]{4})\)/i;
 
@@ -23,7 +20,7 @@ export const findMovieTweets = async (
   await userTimeline.fetchLast(count);
 
   const movieTweets = userTimeline.tweets.reduce(
-    (movieTweets: TweetData[], tweet) => {
+    (movieTweets: MovieTweet[], tweet) => {
       const match = tweet.full_text?.match(MOVIE_TWEET_REGEX);
       if (!match) {
         return movieTweets;
@@ -35,12 +32,28 @@ export const findMovieTweets = async (
           title: match[1].trim(),
           year: Number(match[2]),
           likes: tweet.favorite_count,
-          poster: tweet.entities.media?.[0]?.media_url_https,
+          posterUrl: tweet.entities.media?.[0]?.media_url_https,
         },
       ];
     },
     []
   );
 
-  return movieTweets;
+  const sortedTweets = movieTweets
+    .sort((a, b) => b.likes - a.likes)
+    .slice(0, 10);
+
+  const promises = sortedTweets.map(async (tweet) => {
+    if (tweet.posterUrl) {
+      const poster = await loadImage(tweet.posterUrl);
+      return {
+        ...tweet,
+        poster,
+      };
+    } else {
+      return tweet;
+    }
+  });
+
+  return await Promise.all(promises);
 };
