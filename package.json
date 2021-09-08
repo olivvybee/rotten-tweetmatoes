@@ -10,8 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/yargs": "^17.0.2",
     "dotenv": "^10.0.0",
-    "twitter-api-v2": "^1.4.0"
+    "twitter-api-v2": "^1.4.0",
+    "yargs": "^17.1.1"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
