@@ -20,6 +20,11 @@ export const main = async () => {
       description: 'The total number of tweets to fetch to find movie tweets',
       default: 250,
     })
+    .option('month', {
+      alias: 'm',
+      type: 'boolean',
+      description: 'Find tweets from the current month',
+    })
     .option('output', {
       alias: 'o',
       type: 'string',
@@ -27,16 +32,16 @@ export const main = async () => {
       default: 'rotten_tweetmatoes.png',
     }).argv;
 
-  const { username, count, output } = argv;
+  const { username, count, month, output } = argv;
 
   if (!username) {
     console.error('--username option is required.');
     process.exit(1);
   }
 
-  const movieTweets = await findMovieTweets(username, count);
+  const movieTweets = await findMovieTweets(username, count, month);
 
-  const imageData = plotChart(movieTweets, username);
+  const imageData = plotChart(movieTweets, username, month);
 
   const outputFilename = output.endsWith('.png') ? output : `${output}.png`;
   const outputPath = path.resolve(__dirname, outputFilename);

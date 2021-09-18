@@ -22,9 +22,28 @@ const POSTER_WIDTH = (2 * POSTER_HEIGHT) / 3;
 
 const MAX_BAR_WIDTH = CANVAS_WIDTH - POSTER_WIDTH - 16 - 48;
 
+const MONTH_NAMES = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
 let y = 48;
 
-export const plotChart = (movieTweets: MovieTweet[], username: string) => {
+export const plotChart = (
+  movieTweets: MovieTweet[],
+  username: string,
+  currentMonth: boolean = false
+) => {
   const canvas = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
   const ctx = canvas.getContext('2d');
 
@@ -38,8 +57,16 @@ export const plotChart = (movieTweets: MovieTweet[], username: string) => {
 
   y += TITLE_FONT_SIZE + 48;
 
+  const now = new Date();
+  const day = now.getDate();
+  const month = day > 7 ? now.getMonth() : now.getMonth() - 1;
+
+  const topMoviesText = currentMonth
+    ? `@${username}'s top movies for ${MONTH_NAMES[month]}`
+    : `@${username}'s top movies`;
+
   ctx.font = BODY_FONT;
-  ctx.fillText(`@${username}'s top movies`, 24, y);
+  ctx.fillText(topMoviesText, 24, y);
 
   y += BODY_FONT_SIZE + 24;
 
